@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
+@RequestMapping("/user-service")
 @Slf4j
 public class UserController {
 
@@ -38,7 +39,7 @@ public class UserController {
 
     private String welcomeMsg;
 
-    @GetMapping("/user/greeting")
+    @GetMapping("/greeting")
     public String hello() {
         return welcomeMsg;
     }
