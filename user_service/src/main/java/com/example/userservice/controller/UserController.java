@@ -17,7 +17,6 @@ import javax.annotation.PostConstruct;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping("/user")
 @Slf4j
 public class UserController {
 
@@ -35,10 +34,9 @@ public class UserController {
         this.modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
     }
 
-    @Value("${greeting.msg}")
     private String welcomeMsg;
 
-    @GetMapping("/greeting")
+    @GetMapping("/user/greeting")
     public String hello() {
         return welcomeMsg;
     }

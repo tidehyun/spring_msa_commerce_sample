@@ -41,8 +41,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto createUser(UserDto dto) {
-        byte[] arr = new byte[7];
-        new Random().nextBytes(arr);
         dto.setUserId(RandomStringUtils.randomAlphabetic(10));
 
         UserEntity userEntity = modelMapper.map(dto, UserEntity.class);
