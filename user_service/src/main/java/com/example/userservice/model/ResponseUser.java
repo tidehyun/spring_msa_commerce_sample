@@ -1,23 +1,20 @@
-package com.example.userservice.dto;
+package com.example.userservice.model;
 
-import com.example.userservice.model.ResponseOrder;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.util.Date;
 import java.util.List;
 
 @Setter
 @Getter
 @ToString
-public class UserDto {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class ResponseUser {
     private String email;
     private String name;
-    private String pwd;
-    private String encPwd;
     private String userId;
-    private Date createAt;
 
     private List<ResponseOrder> orders;
 }

@@ -3,22 +3,17 @@ package com.example.userservice.service;
 import com.example.userservice.dto.UserDto;
 import com.example.userservice.entity.UserEntity;
 import com.example.userservice.repository.UserRepository;
-import com.netflix.discovery.converters.Auto;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.RandomStringUtils;
-import org.apache.commons.lang.time.DateUtils;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
-import org.modelmapper.spi.MatchingStrategy;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import javax.swing.plaf.multi.MultiOptionPaneUI;
-import java.nio.charset.Charset;
-import java.util.Random;
-import java.util.UUID;
+import java.util.ArrayList;
+import java.util.Objects;
 
 @Service
 @Slf4j
@@ -48,5 +43,21 @@ public class UserServiceImpl implements UserService {
         log.info("user data : {}", userEntity);
         repository.save(userEntity);
         return dto;
+    }
+
+    @Override
+    public Iterable<UserEntity> getUsers() {
+        return repository.findAll();
+    }
+
+    @Override
+    public UserDto getUserById(String userId) {
+        UserEntity userEntity = repository.findByUserId(userId);
+        if (Objects.isNull(userEntity)) {
+            throw new UsernameNotFoundException("User not found");
+        }
+        UserDto userDto = new ModelMapper().map(userEntity, UserDto.class);
+        userDto.setOrders(new ArrayList<>());
+        return userDto;
     }
 }
