@@ -24,7 +24,7 @@ public class CatalogEntity implements Serializable {
     @Column(nullable = false, length = 200, unique = true)
     private String productId;
 
-    @Column(nullable = false, length = 500, unique = true)
+    @Column(nullable = false, length = 500)
     private String productName;
 
     @Column(nullable = false)

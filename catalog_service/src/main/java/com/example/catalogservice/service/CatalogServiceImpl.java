@@ -4,6 +4,7 @@ import com.example.catalogservice.dto.CatalogDto;
 import com.example.catalogservice.entity.CatalogEntity;
 import com.example.catalogservice.repository.CatalogRepository;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -24,6 +25,7 @@ public class CatalogServiceImpl implements CatalogService {
     @PostConstruct
     public void init() {
         this.modelMapper = new ModelMapper();
+        this.modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
     }
 
     @Override

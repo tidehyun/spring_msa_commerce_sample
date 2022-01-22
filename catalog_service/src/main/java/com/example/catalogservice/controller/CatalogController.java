@@ -5,6 +5,7 @@ import com.example.catalogservice.model.ResponseCatalog;
 import com.example.catalogservice.service.CatalogService;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,6 +31,7 @@ public class CatalogController {
     @PostConstruct
     public void init() {
         this.modelMapper = new ModelMapper();
+        this.modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
     }
 
     @GetMapping("/catalogs")
@@ -37,9 +39,7 @@ public class CatalogController {
         Iterable<CatalogEntity> catalogEntities = catalogService.getAllCatalogs();
         List<ResponseCatalog> catalogList = new ArrayList<>();
 
-        catalogEntities.forEach(catalogEntity -> {
-            catalogList.add(modelMapper.map(catalogEntity, ResponseCatalog.class));
-        });
+        catalogEntities.forEach(catalogEntity -> catalogList.add(modelMapper.map(catalogEntity, ResponseCatalog.class)));
         return ResponseEntity.status(HttpStatus.OK).body(catalogList);
     }
 }
