@@ -53,9 +53,7 @@ public class UserController {
     @GetMapping("/users")
     public ResponseEntity<List<ResponseUser>> getUsers() {
         List<ResponseUser> users = new ArrayList<>();
-        userService.getUsers().forEach(userEntity -> {
-            users.add(modelMapper.map(userEntity, ResponseUser.class));
-        });
+        userService.getUsers().forEach(userEntity -> users.add(modelMapper.map(userEntity, ResponseUser.class)));
         return ResponseEntity.status(HttpStatus.OK).body(users);
     }
 
