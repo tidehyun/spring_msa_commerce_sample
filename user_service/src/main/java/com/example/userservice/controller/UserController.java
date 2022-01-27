@@ -17,15 +17,19 @@ import javax.annotation.PostConstruct;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @RestController
-@RequestMapping("/user-service")
 @Slf4j
 public class UserController {
 
-    UserService userService;
+    private UserService userService;
 
-    ModelMapper modelMapper;
+    private ModelMapper modelMapper;
+
+    private final static String KEY_EMAIL = "email";
+    private final static String KEY_PWD = "pwd";
 
     public UserController(UserService userService) {
         this.userService = userService;
@@ -48,6 +52,14 @@ public class UserController {
     public ResponseEntity<User> createUser(@RequestBody RequestUser user, @Valid BindingResult result) {
         UserDto userDto = userService.createUser(modelMapper.map(user, UserDto.class));
         return new ResponseEntity<>(User.builder().userId(userDto.getUserId()).name(userDto.getName()).build(), HttpStatus.CREATED);
+    }
+
+    @PostMapping("/login")
+    public void login(Map<String, String> loginMap) {
+        if (Objects.nonNull(loginMap) && Objects.nonNull(loginMap.get(KEY_EMAIL)) && Objects.nonNull(loginMap.get(KEY_PWD))) {
+        } else {
+            throw new RuntimeException("ID or PW is empty");
+        }
     }
 
     @GetMapping("/users")
