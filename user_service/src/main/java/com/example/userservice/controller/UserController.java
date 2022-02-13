@@ -8,6 +8,7 @@ import com.example.userservice.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -26,12 +27,15 @@ public class UserController {
 
     private UserService userService;
 
+    private Environment environment;
+
     private ModelMapper modelMapper;
 
     private final static String KEY_EMAIL = "email";
     private final static String KEY_PWD = "pwd";
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, Environment environment) {
+        this.environment = environment;
         this.userService = userService;
     }
 
@@ -41,11 +45,13 @@ public class UserController {
         this.modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
     }
 
-    private String welcomeMsg;
-
-    @GetMapping("/greeting")
+    @GetMapping("/health_check")
     public String hello() {
-        return welcomeMsg;
+        log.info("local port : {}", environment.getProperty("local.server.port"));
+        log.info("server port : {}", environment.getProperty("server.port"));
+        log.info("token sec : {}", environment.getProperty("token.secret"));
+        log.info("token expiration : {}", environment.getProperty("token.expiration_time"));
+        return "ok";
     }
 
     @PostMapping("/user")
