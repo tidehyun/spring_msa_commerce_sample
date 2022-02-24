@@ -20,6 +20,11 @@ spring:
     driver-class-name: org.h2.Driver
 #    username: sa
 #    password:
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: guest
+    password: guest
 
 eureka:
   instance:
@@ -47,3 +52,7 @@ management:
     web:
       exposure:
         include: "*"
+
+order:
+  service:
+    url: http://127.0.0.1:8000/order-service/
