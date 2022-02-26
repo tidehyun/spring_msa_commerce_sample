@@ -1,20 +1,28 @@
 package com.example.userservice.service;
 
+import com.example.userservice.client.OrderServiceFeignClient;
 import com.example.userservice.dto.UserDto;
 import com.example.userservice.entity.UserEntity;
+import com.example.userservice.model.ResponseOrder;
 import com.example.userservice.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.RandomStringUtils;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -24,10 +32,17 @@ public class UserServiceImpl implements UserService {
     UserRepository repository;
     ModelMapper modelMapper;
     BCryptPasswordEncoder passwordEncoder;
+    RestTemplate restTemplate;
+    OrderServiceFeignClient orderServiceFeignClient;
 
-    public UserServiceImpl(UserRepository repository, BCryptPasswordEncoder passwordEncoder) {
+    @Value("${order.service.url}")
+    private String orderSvcUrl;
+
+    public UserServiceImpl(UserRepository repository, BCryptPasswordEncoder passwordEncoder, RestTemplate restTemplate, OrderServiceFeignClient orderServiceFeignClient) {
         this.repository = repository;
         this.passwordEncoder = passwordEncoder;
+        this.restTemplate = restTemplate;
+        this.orderServiceFeignClient = orderServiceFeignClient;
     }
 
     @PostConstruct
@@ -59,8 +74,25 @@ public class UserServiceImpl implements UserService {
             throw new UsernameNotFoundException("User not found");
         }
         UserDto userDto = new ModelMapper().map(userEntity, UserDto.class);
-        userDto.setOrders(new ArrayList<>());
+
+        // orders by rest template
+//        ResponseEntity<List<ResponseOrder>> exchange = usingRestClientTemplate(userDto);
+//        userDto.setOrders(exchange.getBody());
+
+        // orders by feign client
+        userDto.setOrders(usingFeignClient(userDto.getUserId()));
         return userDto;
+    }
+
+    private ResponseEntity<List<ResponseOrder>> usingRestClientTemplate(UserDto userDto) {
+        String orderUrl = orderSvcUrl.concat("/orders/").concat(userDto.getUserId());
+        log.info("order service url : {}", orderUrl);
+        return restTemplate.exchange(orderUrl, HttpMethod.GET, null, new ParameterizedTypeReference<List<ResponseOrder>>() {
+        });
+    }
+
+    private List<ResponseOrder> usingFeignClient(String userId) {
+        return orderServiceFeignClient.getOrderS(userId);
     }
 
     @Override

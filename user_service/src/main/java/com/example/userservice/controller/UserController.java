@@ -80,4 +80,5 @@ public class UserController {
         ResponseUser user = modelMapper.map(userService.getUserById(userId), ResponseUser.class);
         return ResponseEntity.status(HttpStatus.OK).body(user);
     }
+
 }
